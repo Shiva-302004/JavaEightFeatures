@@ -1,11 +1,28 @@
 package com.gevernova.javaEightfeatures.DayThree.ProblemSetThree.ClaimAnalysis;
 
+
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Main {
+    public static void filter(List<Claim> claims){
+        claims.stream()
+                .filter(s->s.getStatus().equalsIgnoreCase("Approved"))
+                .filter(s->s.getGetClaimAmount()>5000)
+                .forEach(System.out::println);
+    }
+
+    public static Map<Integer,List<Integer>> GroupingByDepartment(List<Claim> claims){
+        return claims.stream()
+                .collect(Collectors.groupingBy(Claim::getPolicyNumber,Collectors.mapping(Claim::getClaimId,Collectors.toList())));
+    }
+    public static Map<Integer,Double> Aggregate(List<Claim> claims){
+        return claims.stream()
+                .collect(Collectors.groupingBy(Claim::getPolicyNumber,Collectors.averagingDouble(Claim::getGetClaimAmount)));
+    }
     public static void main(String[] args) {
         List<Claim> claims=new ArrayList<>(
                 List.of(
@@ -22,17 +39,13 @@ public class Main {
                         new Claim(111,2025,40000,"2026-01-12","rejected")
                 )
         );
-        claims.stream()
-                .filter(s->s.getStatus().equalsIgnoreCase("Approved"))
-                .filter(s->s.getGetClaimAmount()>5000)
-                .forEach(System.out::println);
-
-        Map<Integer,List<Integer>> mp=claims.stream()
-                .collect(Collectors.groupingBy(Claim::getPolicyNumber,Collectors.mapping(Claim::getClaimId,Collectors.toList())));
+        System.out.println("--- filtered list on basis of department and salary ---");
+        filter(claims);
+        System.out.println("---- create map with department and employees names");
+        Map<Integer,List<Integer>> mp=GroupingByDepartment(claims);
         System.out.println(mp);
-
-        Map<Integer,Double> map=claims.stream()
-                .collect(Collectors.groupingBy(Claim::getPolicyNumber,Collectors.averagingDouble(Claim::getGetClaimAmount)));
+        System.out.println("---- create map with department and average salary");
+        Map<Integer,Double> map=Aggregate(claims);
         System.out.println(map);
     }
 }

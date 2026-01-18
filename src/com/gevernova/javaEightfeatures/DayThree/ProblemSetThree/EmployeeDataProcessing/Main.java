@@ -7,6 +7,28 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Main {
+    public static void filter(List<Employee> Employees){
+        Employees.stream()
+                .filter(s->s.getDepartment().equalsIgnoreCase("engineering"))
+                .filter(s->(s.getSalary()>=80000))
+                .forEach(System.out::println);
+    }
+    public  static  void sort(List<Employee> Employees){
+        Employees.stream()
+                .sorted((a,b)->b.getSalary()-a.getSalary())
+                .forEach(System.out::println);
+    }
+    public static Map<String,List<String>> GroupingByDepartment(List<Employee> Employees){
+        return Employees.stream()
+                .collect(Collectors.groupingBy(Employee::getDepartment,
+                        Collectors.mapping(Employee::getName,
+                                Collectors.toList())));
+    }
+    public static Map<String,Double> Aggregate(List<Employee> Employees){
+        return Employees.stream()
+                .collect(Collectors.groupingBy(Employee::getDepartment,
+                        Collectors.averagingDouble(Employee::getSalary)));
+    }
     public static void main(String[] args) {
         List<Employee> Employees=new ArrayList<>(
                 List.of(
@@ -19,30 +41,15 @@ public class Main {
                         new Employee(7,"manya","hr",80000)
                 )
         );
-
-
-        Employees.stream()
-                .filter(s->s.getDepartment().equalsIgnoreCase("engineering"))
-                .filter(s->(s.getSalary()>=80000))
-                .forEach(System.out::println);
-
-
-
-        Employees.stream()
-                .sorted((a,b)->b.getSalary()-a.getSalary())
-                .forEach(System.out::println);
-
-
-        Map<String,List<String>> mp=Employees.stream()
-                .collect(Collectors.groupingBy(Employee::getDepartment,
-                        Collectors.mapping(Employee::getName,
-                                Collectors.toList())));
+        System.out.println("--- filtered list on basis of department and salary ---");
+        filter(Employees);
+        System.out.println("---- sorted list on basis of decreasing salary -----");
+        sort(Employees);
+        System.out.println("---- create map with department and employees names");
+        Map<String,List<String>> mp=GroupingByDepartment(Employees);
         System.out.println(mp);
-
-
-        Map<String,Double> map=Employees.stream()
-                .collect(Collectors.groupingBy(Employee::getDepartment,
-                        Collectors.averagingDouble(Employee::getSalary)));
+        System.out.println("---- create map with department and average salary");
+        Map<String,Double> map=Aggregate(Employees);
         System.out.println(map);
     }
 }

@@ -5,6 +5,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Main {
+    public static void filter(List<Sale> sales){
+        sales.stream().filter(s->s.getQuantity()>10).forEach(System.out::println);
+    }
+    public static  List<ProductSales> Transform(List<Sale> sales){
+        return sales.stream().map(s->new ProductSales(s.productId,s.getQuantity()*s.getPrice())).toList();
+    }
+    public static void sortedListOnBasisOfTR(List<ProductSales> newlist){
+        newlist.stream().sorted((a,b)->b.getTr()-a.getTr()).forEach(System.out::println);
+    }
+    public static  void getTopFiveReturn(List<ProductSales> newlist){
+        newlist.stream()
+                .sorted((a,b)->b.getTr()-a.getTr())
+                .limit(5)
+                .forEach(System.out::println);
+    }
     public static void main(String[] args) {
         List<Sale> sales=new ArrayList<>(
                 List.of(
@@ -19,18 +34,18 @@ public class Main {
                         new Sale(9,70,300)
                 )
         );
+        System.out.println("---- filtered list ----");
+        filter(sales);
+        System.out.println("--- productsales ---");
 
-        sales.stream().filter(s->s.getQuantity()>10).forEach(System.out::println);
 
-        List<ProductSales> newlist=sales.stream().map(s->new ProductSales(s.productId,s.getQuantity()*s.getPrice())).toList();
+        List<ProductSales> newlist=Transform(sales);
         System.out.println(newlist);
 
+        System.out.println("--- sorted list ----");
+        sortedListOnBasisOfTR(newlist);
 
-        newlist.stream().sorted((a,b)->b.getTr()-a.getTr()).forEach(System.out::println);
-
-        newlist.stream()
-                .sorted((a,b)->b.getTr()-a.getTr())
-                .limit(5)
-                .forEach(System.out::println);
+        System.out.println("--- top 5 total returns list ----");
+        getTopFiveReturn(newlist);
     }
 }
